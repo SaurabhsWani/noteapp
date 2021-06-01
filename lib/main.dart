@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:noteapp/logic/cubit/addnote_cubit.dart';
 import 'package:noteapp/logic/cubit/internet_cubit.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:noteapp/presentation/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  var url = Uri.parse("https://api.ipify.org");
+  var response = await http.get(url);
   runApp(MyApp(
-    appRouter: AppRouter(),
+    appRouter: AppRouter(ip: response.body),
     connectivity: Connectivity(),
   ));
 }

@@ -8,6 +8,9 @@ import 'package:noteapp/logic/cubit/internet_cubit.dart';
 import 'package:noteapp/presentation/router/BottmnavigationBar_screen.dart';
 
 class Add extends StatefulWidget {
+  final ip;
+
+  const Add({Key key, this.ip}) : super(key: key);
   @override
   _AddState createState() => _AddState();
 }
@@ -76,6 +79,8 @@ class _AddState extends State<Add> {
                     try {
                       await fsc
                           .collection("User")
+                          .doc(widget.ip)
+                          .collection('Note')
                           .add({
                             'Title': addnotestate.title,
                             'Note': addnotestate.discription,

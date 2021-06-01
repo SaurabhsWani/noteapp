@@ -2,14 +2,15 @@ import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:video_player/video_player.dart';
 
 import 'package:noteapp/logic/DatabaseOffline/Notedatbase.dart';
 import 'package:noteapp/logic/cubit/internet_cubit.dart';
 import 'package:noteapp/presentation/screens/video_player.dart';
-import 'package:video_player/video_player.dart';
 
 class DetailScreen extends StatefulWidget {
   final String title;
+  final ip;
   final String note;
   final int id;
   final String ido;
@@ -19,6 +20,7 @@ class DetailScreen extends StatefulWidget {
     this.title,
     this.note,
     this.id,
+    this.ip,
     this.ido,
     this.videolink,
   }) : super(key: key);
@@ -70,6 +72,8 @@ class _DetailScreenState extends State<DetailScreen>
                         };
                         fsc
                             .collection("User")
+                            .doc(widget.ip)
+                            .collection('Note')
                             .doc(widget.ido.toString())
                             .update(data)
                             .then(

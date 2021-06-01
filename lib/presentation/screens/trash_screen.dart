@@ -8,6 +8,9 @@ import 'package:noteapp/logic/DatabaseOnline/Online_data_fetch.dart';
 import 'package:noteapp/presentation/screens/notepage_screen.dart';
 
 class Trash extends StatefulWidget {
+  final ip;
+
+  const Trash({Key key, this.ip}) : super(key: key);
   @override
   _TrashState createState() => _TrashState();
 }
@@ -82,7 +85,7 @@ class _TrashState extends State<Trash>
         },
         builder: (context, state) {
           return TabBarView(controller: _tabController, children: [
-            onileFetch(1),
+            onileFetch(1, widget.ip),
             NotesPage(
               qu: 1,
             )

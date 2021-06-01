@@ -106,13 +106,14 @@ class NoteDB {
 
   Future<int> update({Note note, int sta}) async {
     final db = await instance.database;
-    return db.rawUpdate(
-        'UPDATE $table SET ${NoteFileds.status}=$sta WHERE ${NoteFileds.id}=${note.id}');
-    // return db.update(
-    //   table,
-    //   note.toJson(),
-    //   where: '${NoteFileds.id} = ?',
-    //   whereArgs: [note.id],
-    // );
+    return await db.rawUpdate(
+        'UPDATE $table SET ${NoteFileds.status}=$sta WHERE ${NoteFileds.id}=?',
+        [note.id]);
+  }
+
+  Future<int> delete(Note note) async {
+    final db = await instance.database;
+    return await db
+        .rawDelete('DELETE FROM $table WHERE ${NoteFileds.id}=?', [note.id]);
   }
 }

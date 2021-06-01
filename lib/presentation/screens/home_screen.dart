@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:noteapp/logic/cubit/internet_cubit.dart';
 import 'package:noteapp/presentation/router/BottmnavigationBar_screen.dart';
@@ -7,6 +8,9 @@ import 'package:noteapp/logic/DatabaseOnline/Online_data_fetch.dart';
 import 'package:noteapp/presentation/screens/notepage_screen.dart';
 
 class Home extends StatefulWidget {
+  final ip;
+
+  const Home({Key key, this.ip}) : super(key: key);
   @override
   _HomeState createState() => _HomeState();
 }
@@ -23,6 +27,7 @@ class _HomeState extends State<Home>
     _tabController.index = tabIndex.value;
   }
 
+  Map<String, dynamic> map = {};
   @override
   void initState() {
     _tabController = TabController(
@@ -35,6 +40,7 @@ class _HomeState extends State<Home>
         tabIndex.value = _tabController.index;
       });
     });
+
     super.initState();
   }
 
@@ -80,7 +86,7 @@ class _HomeState extends State<Home>
         },
         builder: (context, state) {
           return TabBarView(controller: _tabController, children: [
-            onileFetch(0),
+            onileFetch(0, widget.ip),
             NotesPage(
               qu: 0,
             )

@@ -43,9 +43,16 @@ class _NotesPageState extends State<NotesPage> {
         child: isLoading
             ? CircularProgressIndicator()
             : notes.isEmpty
-                ? Text(
-                    'No Notes',
-                    style: TextStyle(color: Colors.white, fontSize: 24),
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Card(
+                        child: Text(
+                          'No Notes',
+                          style: TextStyle(color: Colors.black, fontSize: 24),
+                        ),
+                      ),
+                    ),
                   )
                 : ListView.builder(
                     padding: EdgeInsets.all(8),
@@ -89,22 +96,38 @@ class _NotesPageState extends State<NotesPage> {
                           ],
                         );
                       } else if (widget.qu == 1) {
-                        return Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
+                        return Dismissible(
+                          secondaryBackground: Container(
+                            color: Colors.green,
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Icon(
+                                Icons.restore,
+                                size: 30,
+                              ),
+                            ),
                           ),
-                          elevation: 3,
-                          child: ListTile(
-                            leading: Icon(Icons.note_rounded),
-                            trailing: Icon(Icons.restore),
-                            title: Text(note.title),
-                            onTap: () async {
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Icon(
+                                Icons.delete_forever,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                          key: ValueKey('delete'),
+                          onDismissed: (DismissDirection direction) async {
+                            if (direction == DismissDirection.startToEnd) {
                               await NoteDB.instance
-                                  .update(
-                                      note: Note(
-                                        id: note.id,
-                                      ),
-                                      sta: 0)
+                                  .delete(
+                                    Note(
+                                      id: note.id,
+                                    ),
+                                  )
                                   .then(
                                     (value) => {
                                       ScaffoldMessenger.of(context)
@@ -129,9 +152,52 @@ class _NotesPageState extends State<NotesPage> {
                                           ),
                                         )
                                       });
-                            },
-                            subtitle: Text(
-                                "${note.discription.substring(0, (note.discription.length * (1 / 50)).toInt())}....."),
+                            } else if (direction ==
+                                DismissDirection.endToStart) {
+                              await NoteDB.instance
+                                  .update(
+                                      note: Note(
+                                        id: note.id,
+                                      ),
+                                      sta: 0)
+                                  .then(
+                                    (value) => {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          backgroundColor: Colors.green,
+                                          content: Text(
+                                              ('${note.title.toUpperCase()} Is Resored')),
+                                        ),
+                                      ),
+                                      Navigator.pushNamedAndRemoveUntil(
+                                          context, "/", (_) => false),
+                                    },
+                                  )
+                                  .catchError((error) => {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                                ('${note.title.toUpperCase()} Could Not Restored Try Again!')),
+                                          ),
+                                        )
+                                      });
+                            }
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            elevation: 3,
+                            child: ListTile(
+                              leading: Icon(Icons.note_rounded),
+                              trailing: Icon(Icons.restore),
+                              title: Text(note.title),
+                              subtitle: Text(
+                                  "${note.discription.substring(0, (note.discription.length * (1 / 50)).toInt())}....."),
+                            ),
                           ),
                         );
                       }
