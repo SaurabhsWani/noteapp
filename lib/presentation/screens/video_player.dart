@@ -22,12 +22,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         )
       : Container(
           child: Center(
-            child: CircularProgressIndicator(),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ),
           ),
         );
 
   Widget buildVideo() => buildVideoPlayer();
 
-  Widget buildVideoPlayer() => AspectRatio(
-      aspectRatio: widget.vc.value.aspectRatio, child: VideoPlayer(widget.vc));
+  Widget buildVideoPlayer() => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: AspectRatio(
+            aspectRatio: widget.vc.value.aspectRatio,
+            child: VideoPlayer(widget.vc)),
+      );
 }

@@ -11,7 +11,7 @@ class NoteFileds {
     videoLink,
     status
   ];
-  static final String id = '_id';
+  static final String id = 'id';
   static final String title = 'title';
   static final String discription = 'discription';
   static final String videoLink = 'videoLink';
@@ -67,7 +67,7 @@ class NoteDB {
   NoteDB._init();
   Future<Database> get database async {
     if (_database != null) return _database;
-    _database = await _initDB('note.db');
+    _database = await _initDB('test.db');
     return _database;
   }
 
@@ -79,46 +79,40 @@ class NoteDB {
   }
 
   Future _createDb(Database db, int version) async {
-    final idtype = 'INTERGER PRIMARY KEY';
+    final idtype = 'INTEGER PRIMARY KEY';
     final inttype = 'INTEGER NOT NULL';
     final texttype = 'TEXT ';
     await db.execute(
-        '''CREATE TABLE $table(${NoteFileds.id} $idtype,${NoteFileds.title} $texttype,${NoteFileds.discription} $texttype,${NoteFileds.videoLink} $texttype,${NoteFileds.status} $inttype,)''');
+        '''CREATE TABLE $table(${NoteFileds.id} $idtype,${NoteFileds.title} $texttype,${NoteFileds.discription} $texttype,${NoteFileds.videoLink} $texttype,${NoteFileds.status} $inttype)''');
   }
 
   Future<Note> create(Note note) async {
     final db = await instance.database;
-    // final json=note.toJson();
-    // final columns='${NoteFileds.title},${NoteFileds.discription},${NoteFileds.videoLink},${NoteFileds.status}';
-    // final values='${json[NoteFileds.title]},${json[NoteFileds.discription]},${json[NoteFileds.videoLink]},${json[NoteFileds.status}]';
-    // final id=await db.rawInsert('INSERT INTO ');
     final id = await db.insert(table, note.toJson());
     return note.copy(id: id);
   }
 
-  Future<Note> readNote(int id) async {
+  Future<List<Note>> readallNote(int status) async {
     final db = await instance.database;
-    final maps = await db.query(
-      table,
-      columns: NoteFileds.values,
-      where: '${NoteFileds.id}=?',
-      whereArgs: [id],
-    );
-    if (maps.isNotEmpty) {
-      return Note.fromJson(maps.first);
-    } else {
-      throw Exception('ID $id Not found');
-    }
-  }
-
-  Future<List<Note>> readallNote() async {
-    final db = await instance.database;
-    final result = await db.query(table);
+    final where = '${NoteFileds.status} == $status';
+    final result = await db.query(table, where: where);
     return result.map((json) => Note.fromJson(json)).toList();
   }
 
   Future close() async {
     final db = await instance.database;
     db.close();
+  }
+
+  Future<int> update({Note note, int sta}) async {
+    final db = await instance.database;
+    return db.rawUpdate(
+        'UPDATE $table SET ${NoteFileds.status}=$sta WHERE ${NoteFileds.id}=${note.id}');
+    // return db.update(
+    //   table,
+    //   note.toJson(),
+    //   where: '${NoteFileds.id} = ?',
+    //   whereArgs: [note.id],
+    // );
   }
 }

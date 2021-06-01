@@ -30,41 +30,43 @@ StreamBuilder onileFetch(int condition) {
             z.add(d.get("Note").toString());
           }
           return ListView.builder(
+            padding: EdgeInsets.all(8),
             itemCount: y.length,
             itemBuilder: (context, index) {
               if (condition == 0) {
-                return OpenContainer(
-                  transitionType: ContainerTransitionType.fadeThrough,
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return Card(
-                      // color: Colors.yellow.shade200,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      elevation: 2,
-                      child: ListTile(
-                        leading: Icon(Icons.note_rounded),
-                        trailing: Icon(Icons.open_in_new_rounded),
-                        title: Text(y[index]),
-                        onTap: openContainer,
-                        subtitle: Text(
-                            "${z[index].substring(0, (z[index].length * (1 / 50)).toInt())}........"),
-                      ),
-                    );
-                  },
-                  openBuilder: (BuildContext _, VoidCallback __) {
-                    return DetailScreen(
-                      title: y[index],
-                      note: z[index],
-                      id: id[index],
-                      videolink: vl[index] == '_' ? "_" : vl[index],
-                    );
-                  },
-                  // onClosed: (_) => print('Closed'),
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    OpenContainer(
+                      closedElevation: 2,
+                      transitionType: ContainerTransitionType.fadeThrough,
+                      closedBuilder:
+                          (BuildContext _, VoidCallback openContainer) {
+                        return ListTile(
+                          leading: Icon(Icons.note_rounded),
+                          trailing: Icon(Icons.open_in_new_rounded),
+                          title: Text(y[index]),
+                          onTap: openContainer,
+                          subtitle: Text(
+                              "${z[index].substring(0, (z[index].length * (1 / 50)).toInt())}........"),
+                        );
+                      },
+                      openBuilder: (BuildContext _, VoidCallback __) {
+                        return DetailScreen(
+                          title: y[index],
+                          note: z[index],
+                          ido: id[index],
+                          videolink: vl[index] == '_' ? "_" : vl[index],
+                        );
+                      },
+                      // onClosed: (_) => print('Closed'),
+                    ),
+                  ],
                 );
               } else if (condition == 1) {
                 return Card(
-                  color: Colors.pink.shade300,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
                   ),

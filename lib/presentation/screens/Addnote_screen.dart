@@ -18,60 +18,46 @@ var fsc = FirebaseFirestore.instance;
 class _AddState extends State<Add> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Add Note"),
-        elevation: .1,
-        backgroundColor: Colors.pinkAccent.shade400,
-        actions: <Widget>[
-          BlocBuilder<AddnoteCubit, AddNoteState>(
-            builder: (context, state) {
-              return IconButton(
+    return BlocConsumer<AddnoteCubit, AddNoteState>(
+      listener: (context, state) {
+        final notificationSnackBar = SnackBar(
+          backgroundColor:
+              state.videoLinkcheck == true ? Colors.green : Colors.black,
+          duration: Duration(milliseconds: 700),
+          content: Text(
+            'Video Link Add ' + state.videoLinkcheck.toString().toUpperCase(),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(notificationSnackBar);
+      },
+      builder: (context, state) {
+        final addnotestate = context.read<AddnoteCubit>().state;
+        final internetstate = context.watch<InternetCubit>().state;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Add Note"),
+            elevation: .1,
+            backgroundColor: Colors.pinkAccent.shade400,
+            actions: <Widget>[
+              IconButton(
                 icon: Icon(Icons.check_circle),
                 onPressed: () async {
-                  await NoteDB.instance
-                      .create(Note(
-                        title: state.title,
-                        discription: state.discription,
-                        status: state.status,
-                        videoLink: state.videoLinkcheck == false
-                            ? '_'
-                            : state.videoLink,
-                      ))
-                      .then((value) => {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text(('Note Added SuccesFully')),
-                              ),
-                            ),
-                            Navigator.pushNamedAndRemoveUntil(
-                                context, "/", (_) => false)
-                          })
-                      .catchError((error) => {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text(('Note Add Failed Try Again!')),
-                              ),
-                            )
-                          });
-                  try {
-                    await fsc
-                        .collection("User")
-                        .add({
-                          'Title': state.title,
-                          'Note': state.discription,
-                          "Video_link": state.videoLinkcheck == false
+                  if (internetstate is InternetDisconnected) {
+                    await NoteDB.instance
+                        .create(Note(
+                          title: addnotestate.title,
+                          discription: addnotestate.discription,
+                          status: addnotestate.status,
+                          videoLink: addnotestate.videoLinkcheck == false
                               ? '_'
-                              : state.videoLink,
-                          "status": 0
-                        })
+                              : addnotestate.videoLink,
+                        ))
                         .then((value) => {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.green,
-                                  content: Text(('Note Added SuccesFully')),
+                                  content:
+                                      Text(('SuccesFully Stored on local ')),
                                 ),
                               ),
                               Navigator.pushNamedAndRemoveUntil(
@@ -85,31 +71,49 @@ class _AddState extends State<Add> {
                                 ),
                               )
                             });
-                  } catch (e) {
-                    print(e);
+                  }
+                  if (internetstate is InternetConnected) {
+                    try {
+                      await fsc
+                          .collection("User")
+                          .add({
+                            'Title': addnotestate.title,
+                            'Note': addnotestate.discription,
+                            "Video_link": addnotestate.videoLinkcheck == false
+                                ? '_'
+                                : addnotestate.videoLink,
+                            "status": 0
+                          })
+                          .then((value) => {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content:
+                                        Text(('SuccesFully Stored on cloud ')),
+                                  ),
+                                ),
+                                Navigator.pushNamedAndRemoveUntil(
+                                    context, "/", (_) => false)
+                              })
+                          .catchError((error) => {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content:
+                                        Text(('Note Add Failed Try Again!')),
+                                  ),
+                                )
+                              });
+                    } catch (e) {
+                      print(e);
+                    }
                   }
                 },
-              );
-            },
+              )
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: BlocConsumer<AddnoteCubit, AddNoteState>(
-          listener: (context, state) {
-            final notificationSnackBar = SnackBar(
-              backgroundColor:
-                  state.videoLinkcheck == true ? Colors.green : Colors.black,
-              duration: Duration(milliseconds: 700),
-              content: Text(
-                'Video Link Add ' +
-                    state.videoLinkcheck.toString().toUpperCase(),
-              ),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(notificationSnackBar);
-          },
-          builder: (context, state) {
-            return Column(
+          body: SingleChildScrollView(
+            child: Column(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(
@@ -192,28 +196,32 @@ class _AddState extends State<Add> {
                       )
                     : Text(""),
               ],
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: 15,
-        selectedItemColor: Colors.green,
-        items: btnnav,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
-          }
-          if (index == 2) {
-            Navigator.pushNamedAndRemoveUntil(context, "/trash", (_) => false);
-          }
-          if (index == 1) {
-            // Navigator.pushNamedAndRemoveUntil(context, "/add", (_) => false);
-          }
-        },
-      ),
+            ),
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: 1,
+            type: BottomNavigationBarType.fixed,
+            selectedFontSize: 15,
+            selectedItemColor: Colors.green,
+            items: btnnav,
+            onTap: (index) {
+              if (index == 0) {
+                Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
+              }
+              if (index == 2) {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, "/trash", (_) => false);
+              }
+              if (index == 1) {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, "/Add");
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }
+
+class AddnoteState {}
