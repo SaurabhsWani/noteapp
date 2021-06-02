@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -26,8 +26,12 @@ dependencies:
   sqflite: ^2.0.0+3
   cupertino_icons: ^1.0.2
   flutter_launcher_icons: ^0.9.0
-  device_info: ^2.0.2
-
+  flutter_native_splash: ^1.1.8+4
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/icon.png"
+  android: true
+  ios: true
 dev_dependencies:
   flutter_test:
     sdk: flutter

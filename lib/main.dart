@@ -1,20 +1,27 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:noteapp/logic/cubit/addnote_cubit.dart';
 import 'package:noteapp/logic/cubit/internet_cubit.dart';
-import 'package:http/http.dart' as http;
 import 'package:noteapp/presentation/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  var url = Uri.parse("https://api.ipify.org");
-  var response = await http.get(url);
+  var list = await NetworkInterface.list(type: InternetAddressType.IPv4);
+  var ip = list[0].addresses[0].address;
+  print(list.length);
+  if (list.length == 2) {
+    ip = list[1].addresses[0].address;
+  } else {
+    ip = list[0].addresses[0].address;
+  }
+  print(ip);
   runApp(MyApp(
-    appRouter: AppRouter(ip: response.body),
+    appRouter: AppRouter(ip: ip),
     connectivity: Connectivity(),
   ));
 }

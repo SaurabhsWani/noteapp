@@ -181,7 +181,7 @@ class _DetailScreenState extends State<DetailScreen>
                                       fontSize: 15.0, color: Colors.black)),
                             ),
                             SizedBox(height: 0.0),
-                            widget.videolink != '_'
+                            widget.videolink != "_"
                                 ? BlocBuilder<InternetCubit, InternetState>(
                                     builder: (context, state) {
                                     final internetstate =
@@ -206,7 +206,7 @@ class _DetailScreenState extends State<DetailScreen>
         ),
         floatingActionButton: BlocBuilder<InternetCubit, InternetState>(
           builder: (context, state) {
-            if (state is InternetConnected) {
+            if (state is InternetConnected && widget.videolink != "_") {
               return FloatingActionButton(
                 onPressed: () {
                   if (mounted) {
