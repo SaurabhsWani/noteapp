@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:noteapp/presentation/screens/Detail_sereen.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 StreamBuilder onileFetch(int condition, var ip) {
   var fsc = FirebaseFirestore.instance;
@@ -14,6 +15,11 @@ StreamBuilder onileFetch(int condition, var ip) {
         .where("status", isEqualTo: condition)
         .snapshots(),
     builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      ProgressDialog progressDialog = ProgressDialog(
+        context,
+        type: ProgressDialogType.Normal,
+        isDismissible: false,
+      );
       List<String> y = [], z = [], id = [], vl = [];
       try {
         var x = snapshot.data;
@@ -93,57 +99,73 @@ StreamBuilder onileFetch(int condition, var ip) {
                       ),
                     ),
                   ),
-                  key: ValueKey('delete'),
+                  key: UniqueKey(),
                   onDismissed: (DismissDirection direction) async {
                     if (direction == DismissDirection.startToEnd) {
+                      progressDialog.style(
+                        message: 'Deleting Note Permanently',
+                      );
+                      progressDialog.show();
                       await fsc
                           .collection("User")
                           .doc(ip)
                           .collection('Note')
                           .doc(id[index])
                           .delete()
-                          .then((value) =>
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.green,
-                                  content: Text(
-                                      ('${y[index].toUpperCase()} Is Deleted Successfully')),
-                                ),
-                              ))
-                          .catchError((error) =>
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text(
-                                      ('${y[index].toUpperCase()} Could Not Deleted Try Again!')),
-                                ),
-                              ));
+                          .then((value) => {
+                                progressDialog.hide(),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text(
+                                        ('${y[index].toUpperCase()} Is Deleted Successfully')),
+                                  ),
+                                )
+                              })
+                          .catchError((error) => {
+                                progressDialog.hide(),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                        ('${y[index].toUpperCase()} Could Not Deleted Try Again!')),
+                                  ),
+                                )
+                              });
                     } else if (direction == DismissDirection.endToStart) {
                       Map<String, dynamic> data = <String, dynamic>{
                         "status": 0,
                       };
+                      progressDialog.style(
+                        message: 'Restoring Note',
+                      );
+                      progressDialog.show();
                       await fsc
                           .collection("User")
                           .doc(ip)
                           .collection('Note')
                           .doc(id[index])
                           .update(data)
-                          .then((value) =>
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.green,
-                                  content: Text(
-                                      ('${y[index].toUpperCase()} Is Restored Successfully')),
-                                ),
-                              ))
-                          .catchError((error) =>
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: Colors.red,
-                                  content: Text(
-                                      ('${y[index].toUpperCase()} Could Not Restored Try Again!')),
-                                ),
-                              ));
+                          .then((value) => {
+                                progressDialog.hide(),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text(
+                                        ('${y[index].toUpperCase()} Is Restored Successfully')),
+                                  ),
+                                )
+                              })
+                          .catchError((error) => {
+                                progressDialog.hide(),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                        ('${y[index].toUpperCase()} Could Not Restored Try Again!')),
+                                  ),
+                                )
+                              });
                     }
                   },
                   child: Card(

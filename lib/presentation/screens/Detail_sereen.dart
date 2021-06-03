@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:noteapp/logic/DatabaseOffline/Notedatbase.dart';
@@ -54,9 +55,14 @@ class _DetailScreenState extends State<DetailScreen>
 
   bool _largePhoto = false;
   var fsc = FirebaseFirestore.instance;
-
+  ProgressDialog progressDialog;
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(
+      context,
+      type: ProgressDialogType.Normal,
+      isDismissible: true,
+    );
     return Scaffold(
         appBar: AppBar(
           title: const Text('Note'),
@@ -66,10 +72,14 @@ class _DetailScreenState extends State<DetailScreen>
                 return IconButton(
                     icon: Icon(Icons.delete), // The "-" icon
                     onPressed: () async {
+                      progressDialog.style(
+                        message: 'Moving To Trash',
+                      );
                       if (state is InternetConnected) {
                         Map<String, dynamic> data = <String, dynamic>{
                           "status": 1,
                         };
+                        progressDialog.show();
                         fsc
                             .collection("User")
                             .doc(widget.ip)
@@ -78,6 +88,7 @@ class _DetailScreenState extends State<DetailScreen>
                             .update(data)
                             .then(
                               (value) => {
+                                progressDialog.hide(),
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor: Colors.green,
@@ -90,6 +101,7 @@ class _DetailScreenState extends State<DetailScreen>
                               },
                             )
                             .catchError((error) => {
+                                  progressDialog.hide(),
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.red,
@@ -100,10 +112,12 @@ class _DetailScreenState extends State<DetailScreen>
                                 });
                       }
                       if (state is InternetDisconnected) {
+                        progressDialog.show();
                         await NoteDB.instance
                             .update(sta: 1, note: Note(id: widget.id))
                             .then(
                               (value) => {
+                                progressDialog.hide(),
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor: Colors.green,
@@ -116,6 +130,7 @@ class _DetailScreenState extends State<DetailScreen>
                               },
                             )
                             .catchError((error) => {
+                                  progressDialog.hide(),
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.red,

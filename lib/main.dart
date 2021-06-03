@@ -13,13 +13,11 @@ void main() async {
   await Firebase.initializeApp();
   var list = await NetworkInterface.list(type: InternetAddressType.IPv4);
   var ip = list[0].addresses[0].address;
-  print(list.length);
   if (list.length == 2) {
     ip = list[1].addresses[0].address;
   } else {
     ip = list[0].addresses[0].address;
   }
-  print(ip);
   runApp(MyApp(
     appRouter: AppRouter(ip: ip),
     connectivity: Connectivity(),

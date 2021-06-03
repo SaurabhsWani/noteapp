@@ -15,19 +15,21 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
-  Widget build(BuildContext context) => widget.vc.value.isInitialized
-      ? Container(
-          alignment: Alignment.topCenter,
-          child: buildVideo(),
-        )
-      : Container(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(),
+  Widget build(BuildContext context) {
+    return widget.vc.value.isInitialized
+        ? Container(
+            alignment: Alignment.topCenter,
+            child: buildVideo(),
+          )
+        : Container(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(),
+              ),
             ),
-          ),
-        );
+          );
+  }
 
   Widget buildVideo() => buildVideoPlayer();
 

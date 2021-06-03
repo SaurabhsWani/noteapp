@@ -6,6 +6,7 @@ import 'package:noteapp/logic/DatabaseOffline/Notedatbase.dart';
 import 'package:noteapp/logic/cubit/addnote_cubit.dart';
 import 'package:noteapp/logic/cubit/internet_cubit.dart';
 import 'package:noteapp/presentation/router/BottmnavigationBar_screen.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class Add extends StatefulWidget {
   final ip;
@@ -19,8 +20,17 @@ var titl, para, vidlink;
 var fsc = FirebaseFirestore.instance;
 
 class _AddState extends State<Add> {
+  ProgressDialog progressDialog;
   @override
   Widget build(BuildContext context) {
+    progressDialog = ProgressDialog(
+      context,
+      type: ProgressDialogType.Normal,
+      isDismissible: true,
+    );
+    progressDialog.style(
+      message: 'Saving Note',
+    );
     return BlocConsumer<AddnoteCubit, AddNoteState>(
       listener: (context, state) {
         final notificationSnackBar = SnackBar(
@@ -46,6 +56,7 @@ class _AddState extends State<Add> {
                 icon: Icon(Icons.check_circle),
                 onPressed: () async {
                   if (internetstate is InternetDisconnected) {
+                    progressDialog.show();
                     await NoteDB.instance
                         .create(Note(
                           title: addnotestate.title,
@@ -56,6 +67,7 @@ class _AddState extends State<Add> {
                               : addnotestate.videoLink,
                         ))
                         .then((value) => {
+                              progressDialog.hide(),
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.green,
@@ -67,6 +79,7 @@ class _AddState extends State<Add> {
                                   context, "/", (_) => false)
                             })
                         .catchError((error) => {
+                              progressDialog.hide(),
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.red,
@@ -76,6 +89,7 @@ class _AddState extends State<Add> {
                             });
                   }
                   if (internetstate is InternetConnected) {
+                    progressDialog.show();
                     try {
                       await fsc
                           .collection("User")
@@ -90,17 +104,19 @@ class _AddState extends State<Add> {
                             "status": 0
                           })
                           .then((value) => {
+                                progressDialog.hide(),
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor: Colors.green,
                                     content:
-                                        Text(('SuccesFully Stored on cloud ')),
+                                        Text(('SuccesFully Stored Online ')),
                                   ),
                                 ),
                                 Navigator.pushNamedAndRemoveUntil(
                                     context, "/", (_) => false)
                               })
                           .catchError((error) => {
+                                progressDialog.hide(),
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor: Colors.red,

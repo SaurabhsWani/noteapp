@@ -1,3 +1,14 @@
+flutter build apk --split-per-abi
+
+flutter clean
+flutter pub get
+flutter pub run flutter_native_splash:create
+
+flutter pub get
+flutter pub run flutter_launcher_icons:main
+
+keytool -genkey -v -keystore c:\Users\SHRI\upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias key
+
 # noteapp
 
 A new Flutter project.

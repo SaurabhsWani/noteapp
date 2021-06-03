@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+2
+version: 1.0.1+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
 
   firebase_core: ^1.2.0   
+  local_auth: ^1.1.6
+  progress_dialog: ^1.2.4
   http: ^0.13.3
   cloud_firestore: ^2.1.0
   animations: ^2.0.0
@@ -46,3 +48,4 @@ flutter:
   assets:
     - assets/video/
     - assets/
+    - assets/double_ring_loading_io.gif
