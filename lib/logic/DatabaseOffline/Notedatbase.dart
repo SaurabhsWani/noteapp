@@ -34,6 +34,7 @@ class Note {
   Map<String, Object> toJson() => {
         NoteFileds.id: id,
         NoteFileds.title: title,
+        NoteFileds.videoLink: videoLink,
         NoteFileds.discription: discription,
         NoteFileds.status: status,
       };

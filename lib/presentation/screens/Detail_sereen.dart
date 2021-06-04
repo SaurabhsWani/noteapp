@@ -39,7 +39,7 @@ class _DetailScreenState extends State<DetailScreen>
   void initState() {
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 450));
-    _controller = VideoPlayerController.network(widget.videolink)
+    _controller = VideoPlayerController.network(widget.videolink.toString())
       ..addListener(() => setState(() {}))
       ..setLooping(true)
       ..initialize();
